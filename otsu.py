@@ -8,7 +8,6 @@ import copy
 
 def rgb_to_grayscale(image):
     # convert an image to grayscale and return the grayscale image
-
     # 𝐼 = 𝑅ound(0.299𝑅 + 0.587𝐺 + 0.114𝐵)
     grayValue = 0.299 * image[:,:,0] + 0.587 * image[:,:,1] + 0.114 * image[:,:,2]
     grayImg = grayValue.astype(np.uint8)
@@ -95,19 +94,86 @@ def otsu_method_two_regions(grayscaleImage):
             smallestVariance = variance
             threshold = t
 
-    return threshold
+    return variance, threshold
+
+
+def otsu_method_three_regions(grayscaleImage):
+    grayScaleHistogram = get_grayscale_histogram_array(grayscaleImage)
+
+    smallestVariance = float("inf")
+    threshold1 = 0
+    threshold2 = 1
+    for t1 in range(256-1):
+        for t2 in range(t1+1, 256):
+            areaA = get_area(0, t1+1, grayScaleHistogram)
+            areaB  = get_area(t1+1, t2+1, grayScaleHistogram)
+            areaC = get_area(t2+1, 256, grayScaleHistogram)
+            totalArea = areaA + areaB + areaC
+
+            weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
+            weightB = get_weight_of_area(t1+1, t2+1, grayScaleHistogram, totalArea)
+            weightC = get_weight_of_area(t2+1, 256, grayScaleHistogram, totalArea)
+
+            varianceA = get_variance(grayScaleHistogram[:t1+1])
+            varianceB = get_variance(grayScaleHistogram[t1+1:t2+1])
+            varianceC = get_variance(grayScaleHistogram[t2+1:])
+
+            variance = weightA * varianceA + weightB * varianceB + weightC * varianceC
+            if variance < smallestVariance:
+                smallestVariance = variance
+                threshold1 = t1
+                threshold2 = t2
+
+    return variance, threshold1, threshold2
+
+
+def otsu_method_four_regions(grayscaleImage):
+    grayScaleHistogram = get_grayscale_histogram_array(grayscaleImage)
+
+    smallestVariance = float("inf")
+    threshold1 = 0
+    threshold2 = 1
+    threshold3 = 2
+    for t1 in range(256-2):
+        for t2 in range(t1+1, 256-1):
+            for t3 in range(t2+1, 256):
+                areaA = get_area(0, t1+1, grayScaleHistogram)
+                areaB  = get_area(t1+1, t2+1, grayScaleHistogram)
+                areaC = get_area(t2+1, t3+1, grayScaleHistogram)
+                areaD = get_area(t3+1, 256, grayScaleHistogram)
+                totalArea = areaA + areaB + areaC + areaD
+
+                weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
+                weightB = get_weight_of_area(t1+1, t2+1, grayScaleHistogram, totalArea)
+                weightC = get_weight_of_area(t2+1, t3+1, grayScaleHistogram, totalArea)
+                weightD = get_weight_of_area(t3+1, 256, grayScaleHistogram, totalArea)
+
+                varianceA = get_variance(grayScaleHistogram[:t1+1])
+                varianceB = get_variance(grayScaleHistogram[t1+1:t2+1])
+                varianceC = get_variance(grayScaleHistogram[t2+1:t3+1])
+                varianceD = get_variance(grayScaleHistogram[t3+1:])
+
+                variance = weightA * varianceA + weightB * varianceB + weightC * varianceC + weightD * varianceD
+
+                if variance < smallestVariance:
+                    smallestVariance = variance
+                    threshold1 = t1
+                    threshold2 = t2
+                    threshold3 = t3
+
+    return variance, threshold1, threshold2, threshold3
 
 
 #----- The following functions are for image display --------
 
-def showImage(image, name = "image"):
+def show_image(image, name = "image"):
     # press 0 key to close images
     cv2.imshow(name, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
-def showHistogram(grayscaleImage):
+def show_histogram(grayscaleImage):
     flatList = [item for sublist in grayscaleImage for item in sublist]
     bins = [0] * 256
     for i in range(1, 256):
@@ -116,27 +182,68 @@ def showHistogram(grayscaleImage):
     plt.show()
 
 
-def grayToBicolor(grayscaleImage, threshold):
-    bicolorImage = copy.deepcopy(grayscaleImage)
-    for row in range(len(bicolorImage)):
-        for col in range(len(bicolorImage[row])):
-            if bicolorImage[row][col] <= threshold:
-                bicolorImage[row][col] = 0
+def gray_to_bicolor(grayscaleImage, threshold):
+    biColorImage = copy.deepcopy(grayscaleImage)
+    for row in range(len(biColorImage)):
+        for col in range(len(biColorImage[row])):
+            if biColorImage[row][col] <= threshold:
+                biColorImage[row][col] = 0
             else:
-                bicolorImage[row][col] = 255
-    return bicolorImage
+                biColorImage[row][col] = 255
+    return biColorImage
+
+
+def gray_to_tricolor(grayscaleImage, threshold1, threshold2):
+    triColorImage = copy.deepcopy(grayscaleImage)
+    for row in range(len(triColorImage)):
+        for col in range(len(triColorImage[row])):
+            if triColorImage[row][col] <= threshold1:
+                triColorImage[row][col] = 0
+            elif triColorImage[row][col] <= threshold2:
+                triColorImage[row][col] = 127
+            else:
+                triColorImage[row][col] = 255
+    return triColorImage
+
+
+def gray_to_quartcolor(grayscaleImage, threshold1, threshold2, threshold3):
+    quartColorImage = copy.deepcopy(grayscaleImage)
+    for row in range(len(quartColorImage)):
+        for col in range(len(quartColorImage[row])):
+            if quartColorImage[row][col] <= threshold1:
+                quartColorImage[row][col] = 0
+            elif quartColorImage[row][col] <= threshold2:
+                quartColorImage[row][col] = 85
+            elif quartColorImage[row][col] <= threshold3:
+                quartColorImage[row][col] = 170
+            else:
+                quartColorImage[row][col] = 255
+    return quartColorImage
 
 
 #----- The following functions are for testing --------
 
-def testCase1():
-    image = cv2.imread(r'data13.bmp', 1)
+def output_image(fileName):
+    image = cv2.imread(fileName, 1)
     grayscaleImage = rgb_to_grayscale(image)
-    threshold = otsu_method_two_regions(grayscaleImage)
-    biColorImage = grayToBicolor(grayscaleImage, threshold)
-    showImage(biColorImage)
+
+    varianceTwoRegions, thresholdTwoRegions = otsu_method_two_regions(grayscaleImage)
+    print(varianceTwoRegions)
+    biColorImage = gray_to_bicolor(grayscaleImage, thresholdTwoRegions)
+    show_image(biColorImage)
+
+    varianceThreeRegions, thresholdThreeRegions1, thresholdThreeRegions2 = otsu_method_three_regions(grayscaleImage)
+    triColorImage = gray_to_tricolor(grayscaleImage, thresholdThreeRegions1, thresholdThreeRegions2)
+    print(varianceThreeRegions)
+    show_image(triColorImage)
+
+    varianceFourRegions, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3 = otsu_method_four_regions(grayscaleImage)
+    quartColorImage = gray_to_quartcolor(grayscaleImage, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3)
+    print(varianceFourRegions)
+    show_image(quartColorImage)
+
 
 def main():
-    testCase1()
+    output_image('data13.bmp')
 
 main()
