@@ -77,12 +77,9 @@ def otsu_method_two_regions(grayscaleImage):
 
     smallestVariance = float("inf")
     threshold = 0
+    totalArea = len(grayscaleImage)*len(grayscaleImage[0])
 
     for t in range(256):
-        backgroundArea = get_area(0, t+1, grayScaleHistogram)
-        foregroundArea = get_area(t+1, 256, grayScaleHistogram)
-        totalArea = backgroundArea + foregroundArea
-
         weightB = get_weight_of_area(0, t+1, grayScaleHistogram, totalArea)
         weightF = get_weight_of_area(t+1, 256, grayScaleHistogram, totalArea)
 
@@ -103,18 +100,14 @@ def otsu_method_three_regions(grayscaleImage):
     smallestVariance = float("inf")
     threshold1 = 0
     threshold2 = 1
+    totalArea = len(grayscaleImage)*len(grayscaleImage[0])
     for t1 in range(256-1):
-        for t2 in range(t1+1, 256):
-            areaA = get_area(0, t1+1, grayScaleHistogram)
-            areaB  = get_area(t1+1, t2+1, grayScaleHistogram)
-            areaC = get_area(t2+1, 256, grayScaleHistogram)
-            totalArea = areaA + areaB + areaC
-
-            weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
+        weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
+        varianceA = get_variance(grayScaleHistogram[:t1+1])
+        for t2 in range(t1+1, 256):          
             weightB = get_weight_of_area(t1+1, t2+1, grayScaleHistogram, totalArea)
             weightC = get_weight_of_area(t2+1, 256, grayScaleHistogram, totalArea)
 
-            varianceA = get_variance(grayScaleHistogram[:t1+1])
             varianceB = get_variance(grayScaleHistogram[t1+1:t2+1])
             varianceC = get_variance(grayScaleHistogram[t2+1:])
 
@@ -134,22 +127,17 @@ def otsu_method_four_regions(grayscaleImage):
     threshold1 = 0
     threshold2 = 1
     threshold3 = 2
+    totalArea = len(grayscaleImage)*len(grayscaleImage[0])
     for t1 in range(256-2):
+        weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
+        varianceA = get_variance(grayScaleHistogram[:t1+1])
         for t2 in range(t1+1, 256-1):
+            weightB = get_weight_of_area(t1+1, t2+1, grayScaleHistogram, totalArea)
+            varianceB = get_variance(grayScaleHistogram[t1+1:t2+1])
             for t3 in range(t2+1, 256):
-                areaA = get_area(0, t1+1, grayScaleHistogram)
-                areaB  = get_area(t1+1, t2+1, grayScaleHistogram)
-                areaC = get_area(t2+1, t3+1, grayScaleHistogram)
-                areaD = get_area(t3+1, 256, grayScaleHistogram)
-                totalArea = areaA + areaB + areaC + areaD
-
-                weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
-                weightB = get_weight_of_area(t1+1, t2+1, grayScaleHistogram, totalArea)
                 weightC = get_weight_of_area(t2+1, t3+1, grayScaleHistogram, totalArea)
                 weightD = get_weight_of_area(t3+1, 256, grayScaleHistogram, totalArea)
 
-                varianceA = get_variance(grayScaleHistogram[:t1+1])
-                varianceB = get_variance(grayScaleHistogram[t1+1:t2+1])
                 varianceC = get_variance(grayScaleHistogram[t2+1:t3+1])
                 varianceD = get_variance(grayScaleHistogram[t3+1:])
 
@@ -244,6 +232,6 @@ def output_image(fileName):
 
 
 def main():
-    output_image('data13.bmp')
+    output_image('rock-stream1.bmp')
 
 main()
