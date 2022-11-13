@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+from PIL import Image
 
 
 #----- otsu thresholding operation --------
@@ -212,26 +213,38 @@ def gray_to_quartcolor(grayscaleImage, threshold1, threshold2, threshold3):
 #----- The following functions are for testing --------
 
 def output_image(fileName):
-    image = cv2.imread(fileName, 1)
+    #takes in bmp file only
+    image = cv2.imread(fileName+".bmp", 1)
     grayscaleImage = rgb_to_grayscale(image)
-
+    f=open(fileName+'.txt','w')
+    f.write("image name: "+fileName+"\t")
     varianceTwoRegions, thresholdTwoRegions = otsu_method_two_regions(grayscaleImage)
-    print(varianceTwoRegions)
+    f.write("two region: "+str(varianceTwoRegions)+"\t")
     biColorImage = gray_to_bicolor(grayscaleImage, thresholdTwoRegions)
-    show_image(biColorImage)
+    imageTwoRegion = Image.fromarray(biColorImage)
+    imageTwoRegion.save(fileName+"2R.bmp", "bmp")
 
     varianceThreeRegions, thresholdThreeRegions1, thresholdThreeRegions2 = otsu_method_three_regions(grayscaleImage)
     triColorImage = gray_to_tricolor(grayscaleImage, thresholdThreeRegions1, thresholdThreeRegions2)
-    print(varianceThreeRegions)
-    show_image(triColorImage)
+    f.write("three region: "+str(varianceThreeRegions)+"\t")
+    imageThreeRegion = Image.fromarray(triColorImage)
+    imageThreeRegion.save(fileName+"3R.bmp", "bmp")
+
 
     varianceFourRegions, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3 = otsu_method_four_regions(grayscaleImage)
     quartColorImage = gray_to_quartcolor(grayscaleImage, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3)
-    print(varianceFourRegions)
-    show_image(quartColorImage)
+    f.write("four region: "+str(varianceFourRegions)+"\t")
+    imageQuartRegion = Image.fromarray(quartColorImage)
+    imageQuartRegion.save(fileName+"4R.bmp", "bmp")
+
+    f.close()
 
 
 def main():
-    output_image('rock-stream1.bmp')
+    output_image('rock-stream1')
+    output_image('data13')
+    output_image('tiger1')
+    output_image('basket_balls')
+    output_image('blackroll-duoball')
 
 main()

@@ -1,0 +1,4 @@
+image name: blackroll-duoball
+two region: 11515.961185930586
+three region: 1251.3182395678273
+four region: 965.8317886788848

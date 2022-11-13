@@ -1,0 +1,4 @@
+image name: basket_balls
+two region: 6103.695180454748
+three region: 2353.154252150906
+four region: 1889.3054202294275

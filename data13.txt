@@ -1,0 +1,4 @@
+image name: data13
+two region: 2674.0159283745675
+three region: 1787.161841360674
+four region: 1535.548794346068
