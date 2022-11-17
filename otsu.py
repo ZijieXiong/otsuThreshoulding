@@ -7,6 +7,7 @@ from PIL import Image
 
 #----- otsu thresholding operation --------
 
+
 def rgb_to_grayscale(image):
     # convert an image to grayscale and return the grayscale image
     # 𝐼 = 𝑅ound(0.299𝑅 + 0.587𝐺 + 0.114𝐵)
@@ -69,6 +70,8 @@ def get_weight_of_area(left, right, histogram, totalArea):
     # histogram[g] is the number of pixels with this grayscale value
     weight = 0
     for g in range(left, right):
+        # normalized original histogram
+        # probability of pixel being that region
         weight += histogram[g] / totalArea
     return weight
 
@@ -105,7 +108,7 @@ def otsu_method_three_regions(grayscaleImage):
     for t1 in range(256-1):
         weightA = get_weight_of_area(0, t1+1, grayScaleHistogram, totalArea)
         varianceA = get_variance(grayScaleHistogram[:t1+1])
-        for t2 in range(t1+1, 256):          
+        for t2 in range(t1+1, 256):
             weightB = get_weight_of_area(t1+1, t2+1, grayScaleHistogram, totalArea)
             weightC = get_weight_of_area(t2+1, 256, grayScaleHistogram, totalArea)
 
@@ -155,20 +158,12 @@ def otsu_method_four_regions(grayscaleImage):
 
 #----- The following functions are for image display --------
 
+
 def show_image(image, name = "image"):
     # press 0 key to close images
     cv2.imshow(name, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-
-def show_histogram(grayscaleImage):
-    flatList = [item for sublist in grayscaleImage for item in sublist]
-    bins = [0] * 256
-    for i in range(1, 256):
-        bins[i] = bins[i-1] + 1
-    plt.hist(flatList, bins=bins)
-    plt.show()
 
 
 def gray_to_bicolor(grayscaleImage, threshold):
@@ -212,25 +207,29 @@ def gray_to_quartcolor(grayscaleImage, threshold1, threshold2, threshold3):
 
 #----- The following functions are for testing --------
 
+
 def output_image(fileName):
     #takes in bmp file only
     image = cv2.imread(fileName+".bmp", 1)
     grayscaleImage = rgb_to_grayscale(image)
     f=open(fileName+'.txt','w')
     f.write("image name: "+fileName+"\t")
+
+    # apply otsu operation with two regions
     varianceTwoRegions, thresholdTwoRegions = otsu_method_two_regions(grayscaleImage)
     f.write("two region: "+str(varianceTwoRegions)+"\t")
     biColorImage = gray_to_bicolor(grayscaleImage, thresholdTwoRegions)
     imageTwoRegion = Image.fromarray(biColorImage)
     imageTwoRegion.save(fileName+"2R.bmp", "bmp")
 
+    # apply otsu operation with three regions
     varianceThreeRegions, thresholdThreeRegions1, thresholdThreeRegions2 = otsu_method_three_regions(grayscaleImage)
     triColorImage = gray_to_tricolor(grayscaleImage, thresholdThreeRegions1, thresholdThreeRegions2)
     f.write("three region: "+str(varianceThreeRegions)+"\t")
     imageThreeRegion = Image.fromarray(triColorImage)
     imageThreeRegion.save(fileName+"3R.bmp", "bmp")
 
-
+    # apply otsu operation with four regions
     varianceFourRegions, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3 = otsu_method_four_regions(grayscaleImage)
     quartColorImage = gray_to_quartcolor(grayscaleImage, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3)
     f.write("four region: "+str(varianceFourRegions)+"\t")
