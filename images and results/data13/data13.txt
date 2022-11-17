@@ -1,4 +1,10 @@
 image name: data13
-two region: 2674.0159283745675
-three region: 1787.161841360674
-four region: 1535.548794346068
+two regions variance: 2674.0159283745675
+t1: 186
+three regions variance: 1787.161841360674
+t1: 109
+t2: 206
+four regions variance: 1535.548794346068
+t1: 85
+t2: 158
+t3: 220

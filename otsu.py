@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
+from PIL import Image
 import copy
+
 
 #----- otsu thresholding operation --------
 
@@ -210,11 +212,12 @@ def output_image(fileName):
     image = cv2.imread(fileName+".bmp", 1)
     grayscaleImage = rgb_to_grayscale(image)
     f=open(fileName+'.txt','w')
-    f.write("image name: "+fileName+"\t")
+    f.write("image name: "+fileName+"\n")
 
     # apply otsu operation with two regions
     varianceTwoRegions, thresholdTwoRegions = otsu_method_two_regions(grayscaleImage)
-    f.write("two region: "+str(varianceTwoRegions)+"\t")
+    f.write("two regions variance: "+str(varianceTwoRegions)+"\n")
+    f.write("t1: "+str(thresholdTwoRegions)+"\n")
     biColorImage = gray_to_bicolor(grayscaleImage, thresholdTwoRegions)
     imageTwoRegion = Image.fromarray(biColorImage)
     imageTwoRegion.save(fileName+"2R.bmp", "bmp")
@@ -222,14 +225,19 @@ def output_image(fileName):
     # apply otsu operation with three regions
     varianceThreeRegions, thresholdThreeRegions1, thresholdThreeRegions2 = otsu_method_three_regions(grayscaleImage)
     triColorImage = gray_to_tricolor(grayscaleImage, thresholdThreeRegions1, thresholdThreeRegions2)
-    f.write("three region: "+str(varianceThreeRegions)+"\t")
+    f.write("three regions variance: "+str(varianceThreeRegions)+"\n")
+    f.write("t1: "+str(thresholdThreeRegions1)+"\n")
+    f.write("t2: "+str(thresholdThreeRegions2)+"\n")
     imageThreeRegion = Image.fromarray(triColorImage)
     imageThreeRegion.save(fileName+"3R.bmp", "bmp")
 
     # apply otsu operation with four regions
     varianceFourRegions, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3 = otsu_method_four_regions(grayscaleImage)
     quartColorImage = gray_to_quartcolor(grayscaleImage, thresholdFourRegions1, thresholdFourRegions2, thresholdFourRegions3)
-    f.write("four region: "+str(varianceFourRegions)+"\t")
+    f.write("four regions variance: "+str(varianceFourRegions)+"\n")
+    f.write("t1: "+str(thresholdFourRegions1)+"\n")
+    f.write("t2: "+str(thresholdFourRegions2)+"\n")
+    f.write("t3: "+str(thresholdFourRegions3)+"\n")
     imageQuartRegion = Image.fromarray(quartColorImage)
     imageQuartRegion.save(fileName+"4R.bmp", "bmp")
 
@@ -237,10 +245,25 @@ def output_image(fileName):
 
 
 def main():
+    # Take about a total of 15 minutes to run the program
+    print("Processing rock-stream1.bmp")
     output_image('rock-stream1')
+    print("completed")
+
+    print("Processing data13.bmp")
     output_image('data13')
+    print("completed")
+
+    print("Processing tiger1.bmp")
     output_image('tiger1')
+    print("completed")
+
+    print("Processing basket_balls.bmp")
     output_image('basket_balls')
+    print("completed")
+
+    print("Processing blackroll-duoball.bmp")
     output_image('blackroll-duoball')
+    print("completed")
 
 main()

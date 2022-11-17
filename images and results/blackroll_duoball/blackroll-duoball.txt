@@ -1,4 +1,10 @@
 image name: blackroll-duoball
-two region: 11515.961185930586
-three region: 1251.3182395678273
-four region: 965.8317886788848
+two regions variance: 11515.961185930586
+t1: 145
+three regions variance: 1251.3182395678273
+t1: 52
+t2: 167
+four regions variance: 965.8317886788848
+t1: 34
+t2: 76
+t3: 179

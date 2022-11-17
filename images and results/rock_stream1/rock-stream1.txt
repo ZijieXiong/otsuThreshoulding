@@ -1,4 +1,10 @@
 image name: rock-stream1
-two region: 3428.981532491918
-three region: 3428.3567156657464
-four region: 3422.8015509689726
+two regions variance: 3428.981532491918
+t1: 110
+three regions variance: 3428.3567156657464
+t1: 71
+t2: 151
+four regions variance: 3422.8015509689726
+t1: 51
+t2: 100
+t3: 165

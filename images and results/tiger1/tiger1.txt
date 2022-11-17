@@ -1,4 +1,10 @@
 image name: tiger1
-two region: 5059.3944724791745
-three region: 5059.04625455215
-four region: 5043.899686601869
+two regions variance: 5059.3944724791745
+t1: 107
+three regions variance: 5059.04625455215
+t1: 64
+t2: 151
+four regions variance: 5043.899686601869
+t1: 48
+t2: 109
+t3: 178

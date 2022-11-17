@@ -1,4 +1,10 @@
 image name: basket_balls
-two region: 6103.695180454748
-three region: 2353.154252150906
-four region: 1889.3054202294275
+two regions variance: 6103.695180454748
+t1: 175
+three regions variance: 2353.154252150906
+t1: 100
+t2: 184
+four regions variance: 1889.3054202294275
+t1: 92
+t2: 122
+t3: 197
