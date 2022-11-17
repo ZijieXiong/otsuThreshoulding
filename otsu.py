@@ -1,9 +1,6 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import copy
-from PIL import Image
-
 
 #----- otsu thresholding operation --------
 
